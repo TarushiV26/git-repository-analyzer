@@ -62,22 +62,38 @@ with overview:
             st.metric("Peak month", str(top["Month"]), int(top["Commits"]))
         else:
             st.write("No commit activity available.")
+
 with contributors:
     st.subheader("Contributor commit counts")
     df = contributor_stats(data["commits"])
     if df.empty:
         st.warning("No commits were found.")
     else:
+        st.download_button(
+            label="Download contributor statistics (CSV)",
+            data=df.to_csv(index=False).encode("utf-8"),
+            file_name="contributor_statistics.csv",
+            mime="text/csv",
+        )
         st.dataframe(df, use_container_width=True, hide_index=True)
         st.bar_chart(df.set_index("Contributor")["Commits"])
+
+
 with activity:
     st.subheader("Commits over time")
     df = monthly_activity(data["commits"])
     if df.empty:
         st.warning("No commit activity available.")
     else:
+        st.download_button(
+            label="Download monthly activity (CSV)",
+            data=df.to_csv(index=False).encode("utf-8"),
+            file_name="monthly_activity.csv",
+            mime="text/csv",
+        )
         st.line_chart(df.set_index("Month")["Commits"])
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 with branches:
     st.subheader("Branches")
     df = branch_stats(data["branches"])
@@ -85,10 +101,18 @@ with branches:
         st.info("No branches found.")
     else:
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 with files_tab:
     st.subheader("Most frequently modified files")
     df = frequent_files(data["commits"])
     if df.empty:
         st.info("No file modification history available.")
     else:
+        st.download_button(
+            label="Download file analysis (CSV)",
+            data=df.to_csv(index=False).encode("utf-8"),
+            file_name="file_analysis.csv",
+            mime="text/csv",
+        )
         st.dataframe(df, use_container_width=True, hide_index=True)
+
