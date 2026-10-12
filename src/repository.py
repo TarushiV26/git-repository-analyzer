@@ -12,19 +12,32 @@ def analyze_repository(repo_path):
     if repo.bare:
         raise ValueError("Bare repositories are not supported by this dashboard.")
 
+    
     commits = []
     try:
-        for commit in repo.iter_commits(all=True):
+        for index, commit in enumerate(repo.iter_commits(all=True), start=1):
+            files = []
+
+            # File statistics are expensive for large repositories.
+            # Keep file analytics responsive by checking recent commits only.
+            if index <= 50:
+                try:
+                    files = list(commit.stats.files.keys())
+                except Exception:
+                    # Shallow clones may not contain every parent commit.
+                    files = []
+
             commits.append({
                 "hash": commit.hexsha[:8],
                 "author": (commit.author.name or "Unknown").strip(),
                 "email": (commit.author.email or "").strip(),
                 "date": commit.committed_datetime,
                 "message": commit.summary,
-                "files": list(commit.stats.files.keys()),
+                "files": files,
             })
     except Exception as exc:
         raise ValueError(f"Unable to read commit history: {exc}")
+
 
     # Deduplicate commits reachable from multiple branches.
     unique = {c["hash"]: c for c in commits}
