@@ -4,6 +4,7 @@ from src.repository import analyze_repository
 from src.activity import monthly_activity, frequent_files
 from src.contributors import contributor_stats
 from src.branches import branch_stats
+from src.insights import activity_insights
 
 st.set_page_config(page_title="Git Repository Analyzer", page_icon="📊", layout="wide")
 st.title("🧑‍💻 Git Repository Analyzer")
@@ -79,9 +80,12 @@ with contributors:
         st.bar_chart(df.set_index("Contributor")["Commits"])
 
 
+
+
 with activity:
     st.subheader("Commits over time")
     df = monthly_activity(data["commits"])
+
     if df.empty:
         st.warning("No commit activity available.")
     else:
@@ -93,6 +97,79 @@ with activity:
         )
         st.line_chart(df.set_index("Month")["Commits"])
         st.dataframe(df, use_container_width=True, hide_index=True)
+
+    st.divider()
+    st.subheader("Activity Insights")
+
+    insight = activity_insights(df)
+    st.info(insight["message"])
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric(
+            "Latest month commits",
+            insight["latest_commits"],
+            help=insight["latest_month"] or "",
+        )
+
+    with col2:
+        st.metric(
+            "Previous month commits",
+            insight["previous_commits"],
+            delta=(
+                f'{insight["change_percent"]:+.1f}%'
+                if insight["change_percent"] is not None
+                else None
+            ),
+            help=insight["previous_month"] or "",
+        )
+
+    st.subheader("Commits over time")
+    df = monthly_activity(data["commits"])
+
+    if df.empty:
+        st.warning("No commit activity available.")
+    else:
+        st.download_button(
+    label="Download monthly activity (CSV)",
+    data=df.to_csv(index=False).encode("utf-8"),
+    file_name="monthly_activity.csv",
+    mime="text/csv",
+    key="monthly_activity_csv",
+)
+
+        st.line_chart(df.set_index("Month")["Commits"])
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+        # New feature: Activity Insights
+        st.divider()
+        st.subheader("Activity Insights")
+
+        insight = activity_insights(df)
+        st.info(insight["message"])
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric(
+                "Latest month commits",
+                insight["latest_commits"],
+                help=insight["latest_month"] or "",
+            )
+
+        with col2:
+            st.metric(
+                "Previous month commits",
+                insight["previous_commits"],
+                delta=(
+                    f'{insight["change_percent"]:+.1f}%'
+                    if insight["change_percent"] is not None
+                    else None
+                ),
+                help=insight["previous_month"] or "",
+            )
+
 
 with branches:
     st.subheader("Branches")
