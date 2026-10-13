@@ -1,150 +1,170 @@
 # RepoPulse — Git Repository Analyzer
 
-RepoPulse is a local Python dashboard for exploring the Git history available in a repository. It summarizes commits, contributors, branches, monthly activity, and frequently modified files.
+RepoPulse is a Python-based application that analyzes local Git repositories and presents repository statistics through an interactive Streamlit dashboard. It helps users explore commit activity, contributor statistics, branch information, and tracked-file analysis, with CSV exports for further analysis.
 
 ## Features
 
-- **Repository overview:** summary metrics, current branch, commit timeline, and busiest recorded month.
-- **Contributor intelligence:** contributor commit counts, chart, and CSV export.
-- **Activity & insights:** monthly commit activity, generated insight summary, and CSV export.
-- **Branch explorer:** information about branches available in the local repository.
-- **File intelligence:** frequently modified files and CSV export.
-- **Dark dashboard UI:** consistent chart, table, and CSV download-button styling.
-- **Automated tests:** tests for selected repository-analysis and insight helper functions.
+- **Repository Overview:** View key statistics about a Git repository.
+- **Commit Activity:** Inspect commit history and monthly commit activity.
+- **Contributor Analysis:** View contributor statistics.
+- **Branch Information:** Explore repository branches.
+- **File Analysis:** View information about tracked files.
+- **CSV Export:** Download contributor statistics, monthly commit activity, and file-analysis results as CSV files.
+- **Empty Repository Handling:** Analyze repositories with no commits without an unhandled commit-reference error.
+- **Automated Testing:** Run tests using pytest to verify expected behavior.
 
-## Tech stack
+## Technology Stack
 
-- Python 3.10+
-- Streamlit
-- Pandas
-- Plotly
-- GitPython
-- Pytest
+- **Python:** Core programming language.
+- **Streamlit:** Interactive dashboard and user interface.
+- **GitPython:** Access to Git repository information.
+- **pytest:** Automated testing.
+- **Git and GitHub:** Version control, issue tracking, pull requests, and collaboration.
 
 ## Requirements
 
-- Python 3.10 or newer
-- Git installed locally
-- Dependencies listed in `requirements.txt`
+Before running RepoPulse, ensure that the following are installed:
 
-## Setup
+- Python
+- Git
+- Project dependencies
 
-Run the following commands from the project root.
+## Installation and Setup
 
-### Windows PowerShell
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/TarushiV26/git-repository-analyzer.git
+cd git-repository-analyzer
+```
+
+### 2. Create a Virtual Environment
+
+**Windows PowerShell:**
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m streamlit run app.py
 ```
 
-If the virtual environment already exists, run the app directly with:
-
-```powershell
-.\.venv\Scripts\python.exe -m streamlit run app.py
-```
-
-### macOS / Linux
+**macOS or Linux:**
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+```
+
+### 3. Install Dependencies
+
+If a `requirements.txt` file is available, install the dependencies using:
+
+```bash
+pip install -r requirements.txt
+```
+
+Otherwise, follow the dependency instructions provided in the project repository.
+
+## Running the Application
+
+From the project root directory, execute:
+
+```bash
 python -m streamlit run app.py
 ```
 
-## How to use
+Streamlit will provide a local URL in the terminal. Open the URL in a web browser to access the dashboard.
 
-1. Start the app.
-2. In the sidebar, enter the path to a **local Git repository** containing a `.git` directory.
-3. Click **Analyze repository**.
-4. Explore the Overview, Contributors, Activity & Insights, Branches, and File Intelligence tabs.
-5. Use the **Download CSV** button in the relevant tab to export its table.
+## How to Use RepoPulse
 
-Example Windows path (replace with your own local repository path):
+1. Launch the Streamlit application.
+2. Enter or select the path to a local Git repository.
+3. Run the repository analysis.
+4. Explore repository statistics, commit activity, contributors, branches, and file information.
+5. Use the available CSV download controls to export supported analysis results.
+6. Open the downloaded CSV files in spreadsheet software for further analysis.
 
-```text
-D:\path\to\your\repository
+## CSV Export Enhancement
+
+The CSV export enhancement allows users to save analysis results locally instead of viewing them only in the dashboard.
+
+The supported export categories include:
+
+- Contributor statistics
+- Monthly commit activity
+- File-analysis results
+
+The downloaded files can be opened in spreadsheet applications for reporting, comparison, and further analysis.
+
+CSV download controls should be available when the corresponding data is present.
+
+## Handling Repositories with No Commit History
+
+A newly initialized Git repository may contain no commits. In this situation, the repository's `HEAD` reference may not point to an existing commit.
+
+Attempting to access commit history without checking this condition can result in a missing-reference error.
+
+RepoPulse handles this scenario by checking whether `HEAD` is valid before reading commit history. If the repository contains no commits, the analyzer returns appropriate empty results rather than failing.
+
+A regression test in `tests/test_repository.py` verifies the empty-repository scenario, including zero counts and empty commit details.
+
+## Running Automated Tests
+
+To execute the test suite, run the following command from the project root:
+
+```bash
+python -m pytest -q
 ```
 
-The app analyzes the history available in the selected local clone. A shallow or incomplete clone may not include the full upstream history.
+The latest recorded test run during development reported **9 passed**. Run the command on your current checkout to verify the test result for that version.
+
+## Project Structure
+
+The main project files include:
+
+```text
+git-repository-analyzer/
+├── app.py
+├── src/
+│   └── repository.py
+├── tests/
+│   └── test_repository.py
+├── screenshots/
+└── README.md
+```
+
+Additional files and directories may be present in the repository.
+
+- `app.py` — application entry point.
+- `src/repository.py` — repository-analysis logic.
+- `tests/test_repository.py` — repository-analysis regression tests.
+- `screenshots/` — screenshots used to demonstrate application features.
+
+## GitHub Collaboration Workflow
+
+GitHub Issues and Pull Requests help organize development and track changes.
+
+The workflow followed in the project is:
+
+1. Identify and document a bug or enhancement in a GitHub Issue.
+2. Create a separate branch for the change.
+3. Implement the required code changes.
+4. Run relevant tests.
+5. Commit and push the changes.
+6. Create a Pull Request describing the implementation.
+7. Review and merge the changes when approved.
+
+This workflow supports traceability, code review, and collaborative development.
 
 ## Screenshots
 
-### Repository overview
+The `screenshots/` directory contains screenshots of the dashboard and CSV export workflow. These images can be used to demonstrate repository analysis, data visualization, and downloaded results.
 
-![RepoPulse overview](screenshots/overview.png)
+## Contributing
 
-### Contributors tab — CSV export
+Improvements and bug fixes can be proposed through GitHub Issues and Pull Requests.
 
-![Contributors CSV button](screenshots/contributors-csv-button.png)
+Contributors should clearly describe the issue or enhancement, implement the required changes, run relevant tests, and provide screenshots or test results when appropriate.
 
-### Activity & Insights tab — CSV export
+## License
 
-![Activity CSV button](screenshots/activity-csv-button.png)
-
-### File Intelligence tab — CSV export
-
-![File Analysis CSV button](screenshots/file-analysis-csv-button.png)
-
-### CSV exports opened in Excel
-
-![Contributor statistics CSV opened in Excel](screenshots/contributor-csv-excel.png)
-
-![Monthly activity CSV opened in Excel](screenshots/monthly-activity-csv-excel.png)
-
-### File Intelligence dashboard
-
-![File Intelligence dashboard](screenshots/file-intelligence.png)
-
-### Automated tests
-
-The latest test screenshot supplied for this documentation shows eight tests passing. Re-run the test command locally to confirm the result for the current checkout.
-
-![Pytest output](screenshots/pytest-results.png)
-
-## Testing
-
-From the project root, run:
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q
-```
-
-Or, if the virtual environment is activated:
-
-```bash
-pytest -q
-```
-
-## Project documentation
-
-The investigation documents are kept separately from this README:
-
-- `docs/architecture.md` — architecture notes.
-- `docs/bug-investigation.md` — suggested invalid-repository-path test scenario; record actual results only after running the test.
-- `docs/issue-investigation.md` — issue investigation notes.
-- `docs/pull-request-investigation.md` — pull-request investigation notes.
-- `docs/report-outline.md` — report outline.
-
-These documents describe investigation areas; their presence alone does not prove a bug was reproduced, fixed, or a pull request was merged.
-
-## Limitations
-
-- Analysis is local and does not call the GitHub API.
-- Contributor identity is grouped by Git author name, which can vary across commits.
-- Branch metrics reflect branches visible to the local repository; remote-only branches may not be listed.
-- File frequency is based on commit-level file statistics and is not a measure of lines changed.
-- Results depend on the repository history and objects available in the selected clone.
-
-## References
-
-- GitPython documentation: https://gitpython.readthedocs.io/
-- Streamlit documentation: https://docs.streamlit.io/
-- Git documentation: https://git-scm.com/docs
-
----
-
-*Open Source Technologies (TE7756) — CA-3 Case Study*
+Add the applicable project license here if one has been selected. Refer to the repository's license file or metadata before specifying a license.
